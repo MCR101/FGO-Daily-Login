@@ -65,4 +65,4 @@ def get_version(region: str) -> None:
     if play_store_version is not None:
         return play_store_version
     else:
-        return "ver.2.70.0"
+        return "2.70.0"
