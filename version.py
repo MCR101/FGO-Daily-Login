@@ -19,32 +19,12 @@ PLAY_STORE_URL = {
     "TW": "https://play.google.com/store/apps/details?id=com.xiaomeng.fategrandorder",
 }
 
-APP_STORE_URL = {
-    "NA": "http://itunes.apple.com/us/lookup?bundleId=com.aniplex.fategrandorder.en",
-    "CN": "http://itunes.apple.com/cn/lookup?bundleId=com.bilibili.fatego",
-    "JP": "http://itunes.apple.com/jp/lookup?bundleId=com.aniplex.fategrandorder",
-    "KR": "http://itunes.apple.com/kr/lookup?bundleId=com.netmarble.fgok",
-    "TW": "http://itunes.apple.com/tw/lookup?bundleId=com.xiaomeng.fategrandorder",
-}
-
 PLAY_STORE_XPATH_1 = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz[4]/div[1]/div[2]/div/div[4]/span/div/span"
 PLAY_STORE_XPATH_2 = "/html/body/div[1]/div[4]/c-wiz/div/div[2]/div/div/main/c-wiz[3]/div[1]/div[2]/div/div[4]/span/div/span"
 PLAY_STORE_XPATH_3 = '//div[div[text()="Current Version"]]/span/div/span/text()'
 VERSION_REGEX = re.compile(r"^\d+\.\d+\.\d+$")
 
-
-def get_CN_android_version():
-    r = httpx.get("https://static.biligame.com/config/fgo.config.js")
-    if match := re.search(r"\"latest_version\": \"(.*)\"", r.text):
-        if VERSION_REGEX.match(match.group(1)):
-            return match.group(1)
-
-    return None
-
-
 def get_play_store_ver(region: str):
-    if region == "CN":
-        return get_CN_android_version()
 
     play_store_response = httpx.get(PLAY_STORE_URL[region], follow_redirects=True)
     play_store_html = lxml.html.fromstring(play_store_response.text)
@@ -80,16 +60,6 @@ def get_play_store_ver(region: str):
 
     return None
 
-
-def get_app_store_ver(region: str):
-    r = httpx.get(APP_STORE_URL[region] + f"&t={int(time.time())}")
-    app_store_version: str = r.json()["results"][0]["version"]
-    if VERSION_REGEX.match(app_store_version):
-        return app_store_version
-
-    return None
-
-
 def get_version(region: str) -> None:
     if region not in APP_STORE_URL:
         return None
@@ -97,7 +67,3 @@ def get_version(region: str) -> None:
     play_store_version = get_play_store_ver(region)
     if play_store_version is not None:
         return play_store_version
-
-    app_store_version = get_app_store_ver(region)
-    if app_store_version is not None:
-        return app_store_version
