@@ -61,9 +61,6 @@ def get_play_store_ver(region: str):
     return None
 
 def get_version(region: str) -> None:
-    if region not in APP_STORE_URL:
-        return None
-
     play_store_version = get_play_store_ver(region)
     if play_store_version is not None:
         return play_store_version
